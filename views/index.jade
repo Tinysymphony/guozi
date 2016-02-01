@@ -1,0 +1,101 @@
+extends layout
+
+block content
+
+  header.hd.basic-shadow
+    img(src="/images/s.png").w100.img-title
+    ul.tab-list.fr
+      li.tab-item.fl
+        a(href="#wtf") WTF
+      li.tab-item.fl
+        a(href="#product") Product
+      li.tab-item.fl
+        a(href="#tech") Tech Details
+      li.tab-item.fl
+        a(href="#usage") Usage
+      li.tab-item.fl
+        a(href="#problems") Problems
+
+  div.title
+    h1 小 梦
+    p ——群核工程师贴心小秘书
+      span.ps ( PS. The name of the project is in memory of Mengjie Deng )
+    p
+      span.t-span.span-ver Beta
+      span.t-span.span-status Public
+      span.t-span.span-prj Qunhe Hackday
+
+  div.abstract
+    h3(id="wtf").md-title 小梦是什么? ( 吹水 )
+    ul
+      li 糖果组hackday项目
+      li 跨平台桌面软件 >> OS X | Windows | Linux
+      li 为群核工程师提供最新任务、bug信息推送
+      li 群核人的新闻平台&表情包聚集地
+      li 为了纪念梦幻大人更名
+
+  div.product
+    h3(id="product").md-title 产品说明 ( 挖坑 )
+    p 小梦是想打造一个群核人内部使用的桌面软件，产品的最基础想法来源于年代久远的企鹅宠物或是瑞星小狮子。
+    p 我们想借助于小梦帮助工程师获取最新的jira任务和bug信息推送，并集成了一个目前还是有点鸡肋的私信功能，一切旨在于提高大家的工作效率，防止有用的消息被日常水群所覆盖。
+    p 未来还会集成一个群核人的新闻平台（目前只是静态demo），相当于桌面版的微信公众号，让大家第一时间了解公司的发展和活动等等。
+    p 由于群核的企业文化（笑），表情包云存储是未来必须实现的需求，这里先挖坑。
+
+  div.tech
+    h3(id="tech").md-title 技术简介 ( just hack! )
+    h4.sm-title WTF!!!
+    p 本着“只差一个程序员”的精神，软糖招募了果子入伙，谈了谈产品和需求。发现是史前巨坑，考虑到公司的开发环境，可以考虑21小时速成Qt开发，或者是21小时深入浅出.Net和Objective-C
+    p 然而，然而，我只是个前端 ( 怨念 ) ...
+    p 最初的想法是直接写一个chrome插件，轻量，无需踩跨平台的坑，不过这也失去了hackday的hack精神。
+    h4 The Hack Way
+    p
+      span.sm-tag 跨平台
+      span.sm-tag 伪桌面应用
+      | 目前的小梦基于跨平台开发项目 <a herf="http://electron.atom.io"> Electron </a>，Github出品，原名Atom-shell，技术上类似Node-Webkit。比较成功的产品有Atom编辑器、VS Code、Wordpress客户端等。
+      | Electron实际上是剥离了Chromium内核的一个精简版浏览器 ( 最终还是通过浏览器解决大部分跨平台问题... ) 至于和Native之间的交互是由Electron封装的。
+      | 有点伪装成传统桌面应用程序的感觉...用前端的语言写桌面应用的UI，渲染交给浏览器引擎，Electron内部提供API控制Native...
+      | Electron的意义在于简化跨平台软件开发，并且下载的软件可以及时更新 ( 如果页面是远程服务器提供的话 )，还可以更好地利用本地计算资源。
+      | 小梦的主界面UI，其实是一个隐藏了Native Bar，并且透明了html body的网页。看似一个圆，实际上的边界是透明矩形，所以点击圆形头像附近，特别是上方区域，是不能切换前置窗口的，因为那块透明区域也是小梦的一部分。
+      | 这应该是最hack的一个点...
+    p
+      span.sm-tag Node环境
+      | 用Electron写页面时，和传统的web不同，页面会自动集成Node运行环境，并且会在应用目录下寻找node_modules文件夹，页面用到的js加载顺序会和浏览器中不同，所以需要用node的require保证。
+      | Electron整个应用的后台也是一个node，这和前端view的node环境并不通用，是处在不同进程的，“前后”的通过IPC机制传递信息。
+    p
+      span.sm-tag 窗口间通信
+      | 这是目前还没有优雅解决方案的一个问题，就是不同窗口进程之间的通信。和chrome标签页一样，小梦的每个功能页面都是独立进程，目前的窗口间通信或者数据同步需要以主进程——后台进程为路由，不能窗口间直接通信。
+    p
+      span.sm-tag 数据流程设计
+      | 因为Electron App的“前后端”都是有node环境的，实际上都可以获取数据，所以需要设计一个流程方便维护。用户的登录过程是后台的node环境完成的，前台只负责传输入的数据。后台利用request模块保存登录cookie，同时所有需要登录才能拿到的数据都是通过后台request得到，其余是前台ajax直接获得。
+      | httpHandler实现基础数据获取，dataHandler组合前者api，抽象出更具体的数据api
+    p
+      span.sm-tag 远程数据接口
+      | 这块由兔美负责，jira任务和bug其实是使用jira自带的api，查数据库的话使用jql语句。私信和联系人列表目前是维护在兔美的机子上，之后会迁移到公司内部的一台服务器。
+    p
+      span.sm-tag 消息推送
+      span.sm-tag 轮询
+      | 由于远程服务端并没有开启WebSocket支持，所以采用轮询方式获取信息。得到信息后会推送，在OSX和Linux上是可以直接使用Chrome的Notification API发送的，右上角会出现弹窗。
+      | windows情况比较复杂，测试发现无法使用Notification，所以装了node-notifier这个依赖包实现。在<=7的版本，原生没有toast api，使用的是balloon，在右下角弹出小气泡；>=8时则使用toast，也就是右上角的弹窗。
+    p
+      span.sm-tag 本地数据
+      | 用户的本地数据 ( 登录信息，设置等 )，采用nconf，写文件保存。
+
+  div.usage
+    h3(id="usage").md-title 使用说明
+    p 1. 使用LDAP账号登录，悬浮时可以看到一个蓝色的拖动区域，拖动到一个位置。
+    p 2. 登录时会有未解决的bug和未阅读私信的提醒
+    p 3. 点击小梦可以打开菜单。
+
+  div.bug
+    h3(id="problems").md-title 现有Bug | 问题 | 坑 | 妥协方案
+    ul
+      li OSX下无法开启硬件加速，动画渲染会有卡顿
+      li Windows Native Bar 在拖动时一定会触发点击事件，妥协方案：hover时出现可拖动区域。
+      li 页面全部是本地静态，之后会改成从服务器获取，确保可以实时更新应用。
+      li 私信提醒数目有bug
+      li 群核头条编辑页面和展示页面还未完成
+      li jira task不够完善
+      li 代码中有以前试错用的代码段，组织、设计模式不够合理，所以个人设置的逻辑没有完全加上。需要等待下一个版本精简代码。
+      li OSX使用切换用户功能时会使原本透明的html页面显示，所以这一功能暂时不可使用。
+      li 个人信息目前没有详细数据，以后会填上进公司的时间，作出的贡献（代码、工具、产品），个人荣誉，所属团队，个人表情包等。
+

@@ -1,0 +1,53 @@
+doctype html
+html
+  head
+    title= title
+    link(rel='stylesheet', href='/stylesheets/style.css')
+    link(rel='stylesheet', href='http://cdn.bootcss.com/font-awesome/4.5.0/css/font-awesome.min.css')
+    script(src="http://cdn.bootcss.com/jquery/2.2.0/jquery.min.js")
+  body
+    div.banner
+      img(src="/images/b2.png").img-banner
+      p
+        a.ver-btn Current Version: Beta
+        a(href="/download/darwin-x64").down-btn.mac
+          i.fa.fa-download
+          |  Download For Mac
+        a(href="/download/win32-ia32").down-btn.win32
+          i.fa.fa-download
+          |  Download For win-32bit
+        a(href="/download/win32-x64").down-btn.win64
+          i.fa.fa-download
+          |  Download For win-64bit
+        a(href="/download/linux-ia32").down-btn.linux32
+          i.fa.fa-download
+          |  Download For linux-32bit
+        a(href="/download/linux-x64").down-btn.linux64
+          i.fa.fa-download
+          |  Download For linux-64bit
+        span.icons
+          a(href="https://github.com/Tinysymphony/Qunhe-Helper", target="_blank").fa.fa-github
+          a(href="http://www.wytiny.com/", target="_blank").fa.fa-link
+          a(href="http://weibo.com/3164958577/profile?rightmod=1&wvr=6&mod=personinfo&is_all=1", target="_blank").fa.fa-weibo
+          a(href="https://twitter.com/zjutiny", target="_blank").fa.fa-twitter
+
+  div.body
+    block content
+
+  footer.ft
+    p.partner
+      i.fa.fa-dot-circle-o
+      | 果子
+      span Electron前后端・项目站点维护・测试
+      span.email
+        i.fa.fa
+    p.partner
+      i.fa.fa-dot-circle-o
+      | 兔美
+      span 远程服务端・测试
+    p.partner
+      i.fa.fa-dot-circle-o
+      | 软糖
+      span 产品・视频制作・测试
+
+  script(src="/javascripts/index.js")
